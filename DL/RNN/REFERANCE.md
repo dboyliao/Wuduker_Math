@@ -1,0 +1,2 @@
+- `data/` is from dennybritz's rnn [repo](https://github.com/dennybritz/rnn-tutorial-rnnlm)
+  - [Blog post](http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-2-implementing-a-language-model-rnn-with-python-numpy-and-theano/)

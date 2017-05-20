@@ -52,13 +52,13 @@ class SimpleBackPropNetwork(object):
         y_hat = self.predict(x)
         N = x.shape[1]
 
-        delta = (y - y_hat)*y_hat*(1-y_hat) # m x N
+        delta = (y_hat - y)*y_hat*(1-y_hat) # m x N
         for i in range(1, L+1):
             act = acts[L-i]
-            dW = delta.dot(self._sigmoid(act.T))/N
+            dW = (delta/N).dot(self._sigmoid(act.T))
             db = delta.mean(axis=1)
-            self._weights[-i] += learn_rate*dW
-            self._bias[-i] += learn_rate*db
+            self._weights[-i] -= learn_rate*dW
+            self._bias[-i] -= learn_rate*db
             weight = self._weights[-i]
             delta = weight.T.dot(delta)*act*(1-act)
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                   [0, 0, 1, 1]])
     y = np.array([[1, 0, 1, 0]])
 
-    for i in range(1, 10001):
+    for i in range(1, 15001):
         nn.back_prop(x, y)
         if i % 100 == 0:
             y_hat = nn.predict(x)
