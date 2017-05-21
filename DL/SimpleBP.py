@@ -10,9 +10,9 @@ class SimpleBackPropNetwork(object):
         self._bias = []
         self._shapes = shapes
 
-        for from_layer, to_layer in zip(shapes[0:-1], shapes[1:]):
-            weight = np.random.randn(to_layer, from_layer)
-            bias = np.random.randn(to_layer)
+        for from_layer, to_layer in zip(shapes[:-1], shapes[1:]):
+            weight = np.random.randn(to_layer, from_layer)*0.5
+            bias = np.random.randn(to_layer)*0.5
             self._weights.append(weight)
             self._bias.append(bias)
 
@@ -25,7 +25,7 @@ class SimpleBackPropNetwork(object):
         if x.ndim == 1:
             x = x[:,None] # reshape 1D array into Nx1 matrix
         # activation from layer 0 to L (0 is input layer, L is the output layer)
-        acts = [x.copy()]
+        acts = [self._sigmoid(x.copy())]
         act = x
         for weight, bias in zip(self._weights, self._bias):
             act = weight.dot(act) + bias[:,None]
@@ -40,7 +40,7 @@ class SimpleBackPropNetwork(object):
             return y_hat.flatten()
         return y_hat
 
-    def back_prop(self, x, y, learn_rate = 0.001):
+    def back_prop(self, x, y, learn_rate = 0.01):
         """
         params
         ======
@@ -57,10 +57,10 @@ class SimpleBackPropNetwork(object):
             act = acts[L-i]
             dW = (delta/N).dot(self._sigmoid(act.T))
             db = delta.mean(axis=1)
-            self._weights[-i] -= learn_rate*dW
-            self._bias[-i] -= learn_rate*db
             weight = self._weights[-i]
             delta = weight.T.dot(delta)*act*(1-act)
+            self._weights[-i] -= learn_rate*dW
+            self._bias[-i] -= learn_rate*db
 
     def _sigmoid(self, x):
         return 1/(1+np.exp(-x))
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                   [0, 0, 1, 1]])
     y = np.array([[1, 0, 1, 0]])
 
-    for i in range(1, 15001):
+    for i in range(1, 11001):
         nn.back_prop(x, y)
         if i % 100 == 0:
             y_hat = nn.predict(x)
